@@ -21,18 +21,25 @@ class Formulario extends Component{
     }
 
     async startFields(){
-        console.log('Entrou');
-
         let url = 'http://localhost:3001/Iniciar';
         let data = {
             airport: this.state.airport,
             clounds: this.state.clound,
-            fieldX: this.state.fieldX,
-            fieldY: this.state.fieldy
+            fieldX: this.state.fieldx,
+            fieldY: this.state.fieldy,
+            daysforfirst: 0,
+            daysforall: 0
         }
+
+        console.log(`url = ${url} || data  = ${data}`);
 
         const resp = await axios.post(url, data);
         console.log(JSON.stringify(resp));
+
+        this.setState({
+            daysforfirst: resp.data.diasPrimeiroAeroporto,
+            daysforall: resp.data.dias
+        })
 
     }
 
@@ -55,6 +62,11 @@ class Formulario extends Component{
 
                 <br/>
                 <button type='button' onClick={() => this.startFields()}>Começar Teste</button>
+
+                <br></br>
+                <label>Dias para cobrir todos os Aeroportos: {this.state.daysforall}</label> <br/>
+                <label>Dias para cobrir o primeiro Aeroporto: {this.state.daysforfirst}</label>
+
             </div>
         )
     }

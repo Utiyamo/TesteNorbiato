@@ -10,7 +10,7 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
-app.use(routes);
+routes(app);
 app.listen(port);
 
 console.log('Message RESTful API server started on: ' + port);

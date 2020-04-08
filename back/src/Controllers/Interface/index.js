@@ -163,7 +163,7 @@ class Interface {
         for(let i = 0; i < body.airport; i++){
             let x = Math.floor(Math.random()*(body.fieldX-0+1)+0);
             let y = Math.floor(Math.random()*(body.fieldY-0+1)+0);
-         
+
             switch(await valida_coordenada(field, x, y)){
                 case -1:
                     i--;
@@ -211,9 +211,11 @@ class Interface {
             }
         }
 
-        const days = 0,
-        daysforfirst = 0,
-        stop_dayforfirst = false;
+        console.log('START');
+
+        let days = 0,
+        daysforfirst = 0;
+        let stop_dayforfirst = false;
         
         while(true){
             if(await valida_airports(field)){
@@ -235,24 +237,29 @@ class Interface {
                     }
                 }
 
-                let expancao = await expancao_fumaça(field, coordenadas);
+                const expancao = await expancao_fumaça(field, coordenadas);
+                await(5000);
 
-                field = expancao.nfield;
+                for(let a in field){
+                    field[a].data = expancao.field[a].data;
+                }
+
                 if(expancao.cobriu_airport)
                     stop_dayforfirst = true;
 
-                days = days + 1;
+                days++;
                 if(!stop_dayforfirst)
                     daysforfirst = daysforfirst + 1;
-                
             }
-            else
-                const data_histogram = {
+            else{
+                console.log('STOP process Espancao');
+                const datahistogram = {
                     dia: days,
                     mapa: field
                 }
-                histogram.push(data_histogram);
+                histogram.push(datahistogram);
                 break;
+            }
         }
 
         const data = {
@@ -268,7 +275,7 @@ class Interface {
     }
 }
 
-valida_coordenada = (field, x, y) =>{
+function valida_coordenada(field, x, y){
     for(let i in field){
         let obj = field[i];
 
@@ -280,15 +287,18 @@ valida_coordenada = (field, x, y) =>{
     return -1;
 }
 
-valida_airports = (field) => {
+function valida_airports(field){
     for(let i in field){
-        return field[i].data === 'A ' ? true : false;            
+        if(field[i].data === 'A ')
+            return true;
     }
+
+    return false;
 }
 
-expancao_fumaça = (field, coordenadas) => {
+function expancao_fumaça(field, coordenadas){
     const nfield = field;
-    const cobriu = false;
+    let cobriu = false;
 
     for(var b in coordenadas){
         const i = coordenadas[b].x;
