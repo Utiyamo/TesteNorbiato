@@ -1,75 +1,110 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-class Formulario extends Component{
-    constructor(props){
-        super(props);
-        this.state = {
-            airport: 3,
-            clound: 4,
-            fieldx: 10,
-            fieldy: 10,
+import Layer from '../Layer';
+
+export default function Formulario(){
+    const [airport, setAirport] = useState(3);
+    const [clound, setClound] = useState(4);
+    const [field, setField] = useState({
+        x: 10,
+        y: 10
+    });
+    const [response, setResponse] = useState({
+        daysForAll: '',
+        daysForFirst: '',
+        map: []
+    });
+
+    function handleUpdateAirport(value){
+        setAirport(value);
+    }
+
+    function handleUpdateClound(value){
+        setClound(value);
+    }
+
+    function handleUpdateFieldX(value){
+        const data = {
+            x: value,
+            y: field.y
         }
 
-        this.startFields = this.startFields.bind(this);
+        setField(data);
     }
 
-    componentDidMount(){
-        axios.defaults.baseURL = 'http://localhost:3001/';
-        axios.defaults.headers.post['Content-Type']='application/json;charset=utf-8';
-        axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
+    function handleUpdateFieldY(value){
+        const data = {
+            x: field.x,
+            y: value
+        };
+
+        setField(data);
     }
 
-    async startFields(){
+    function handleUpdateResponse(req){
+        const dados = {
+            daysForFirst: req.data.diasPrimeiroAeroporto,
+            daysForAll: req.data.dias,
+            map: req.data.mapa
+        }
+
+        setResponse(dados);
+    }
+
+    async function startFields(){
         let url = 'http://localhost:3001/Iniciar';
         let data = {
-            airport: this.state.airport,
-            clounds: this.state.clound,
-            fieldX: this.state.fieldx,
-            fieldY: this.state.fieldy,
+            airport: airport,
+            clounds: clound,
+            fieldX: field.x,
+            fieldY: field.y,
             daysforfirst: 0,
             daysforall: 0
         }
 
-        console.log(`url = ${url} || data  = ${data}`);
-
         const resp = await axios.post(url, data);
-        console.log(JSON.stringify(resp));
-
-        this.setState({
-            daysforfirst: resp.data.diasPrimeiroAeroporto,
-            daysforall: resp.data.dias
-        })
-
+        
+        handleUpdateResponse(resp);
     }
 
-    render(){
-        return(
-            <div>
+    useEffect(async () => {
+        axios.defaults.baseURL = 'http://localhost:3001/';
+        axios.defaults.headers.post['Content-Type']='application/json;charset=utf-8';
+        axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
+
+        setAirport(3);
+        setClound(4);
+        setField({
+            x: 10,
+            y: 10
+        });
+
+    }, []);
+
+    return(
+        <div>
                 <label>Aeroportos:</label>
-                <input type='number' id='airport' name='airports' min='3' value={this.state.airport} onChange={(e) => this.setState({airport: e.target.value})}></input>
+                <input type='number' id='airport' name='airports' min='3' value={airport} onChange={(e) => handleUpdateAirport(e.target.value) }></input>
                 <br/>
 
                 <label>Núvens:</label>
-                <input type='number' id='clound'  name='clounds' min='4' value={this.state.clound} onChange={(e) => this.setState({clound: e.target.value})}></input>
+                <input type='number' id='clound'  name='clounds' min='4' value={clound} onChange={(e) => handleUpdateClound(e.target.value) }></input>
                 <br/>
 
                 <label>Medidas do Terreno:</label><br/>
                 <label>Largura:</label>
-                <input type='number' id='fieldx' name='fieldX' min='10' value={this.state.fieldx} onChange={(e) => this.setState({fieldx: e.target.value})}></input><br/>
+                <input type='number' id='fieldx' name='fieldX' min='10' value={field.x} onChange={(e) => handleUpdateFieldX(e.target.value)}></input><br/>
                 <label>Comprimento:</label>
-                <input type='number' id='fieldy' name='fieldy' min='10' value={this.state.fieldy} onChange={(e) => this.setState({fieldy: e.target.value})}></input><br/>
-
+                <input type='number' id='fieldy' name='fieldy' min='10' value={field.y} onChange={(e) => handleUpdateFieldY(e.target.value)}></input><br/>
                 <br/>
-                <button type='button' onClick={() => this.startFields()}>Começar Teste</button>
+                <button type='button' onClick={startFields}>Começar Teste</button>
 
                 <br></br>
-                <label>Dias para cobrir todos os Aeroportos: {this.state.daysforall}</label> <br/>
-                <label>Dias para cobrir o primeiro Aeroporto: {this.state.daysforfirst}</label>
+                <label>Dias para cobrir todos os Aeroportos: {response.daysForAll}</label> <br/>
+                <label>Dias para cobrir o primeiro Aeroporto: {response.daysForFirst}</label>
 
+                <Layer data={response} campo={field}/>
             </div>
-        )
-    }
+    )
 }
-
-export default Formulario;

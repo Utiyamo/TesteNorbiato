@@ -1,31 +1,42 @@
-import React, { Component } from 'react';
+import React from 'react';
 
-class Grid extends Component{
-    constructor(props){
-        super(props);
-        this.state = {
-            rows: props.rows,
-            line: ''
-        }
+export default function Grid(props){
+    const fieldy = props.campo.y;
+    let render = new Array();
+
+    function renderiza(){
+        const array = new Array();
+        let linha = '';
+        const mapa = props.objeto;
+
+        mapa.map(element => {
+            if(element.y < fieldy-1){
+                linha += element.data;
+                console.log(linha);
+            }
+            else{
+                linha += element.data;
+                linha += '\n';
+                array.push(linha);
+
+                linha = '';
+            }
+        })
+        console.log(JSON.stringify(array));
+
+        render = array;
+        
     }
 
-    render(){
-        return(
-            <div>
-                {
-                    this.state.rows.map((row) => {
-                        this.setState({line: ''});
-                        row.map((column) => {
-                            let lineatu = this.state.line + column.data;
+    renderiza();
 
-                            this.setState({line: lineatu});
-                        })
-                        return(
-                            <label>{this.state.line}</label>
-                        )
-                    })
-                }
-            </div>
-        );
-    }
+    return(
+        <>
+            {render.map(element => (
+                <>
+                <label>{element}</label><br/>
+                </>
+            ))}
+        </>
+    )
 }

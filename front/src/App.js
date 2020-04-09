@@ -1,21 +1,11 @@
 import React, { Component } from 'react';
-import './App.css';
-
 import Formulario from './Components/Formulario';
 
-class App extends Component{
-  constructor(props){
-    super(props);
-    this.state = {};
-  }
+export default function App(){
 
-  render(){
-    return(
-      <div>
-        <Formulario />
-      </div>
-    );
-  }
+  return(
+    <div>
+      <Formulario/>
+    </div>
+  );
 }
-
-export default App;

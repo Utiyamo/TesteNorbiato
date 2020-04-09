@@ -1,25 +1,20 @@
-import React, { Component } from 'react';
-import axios from 'axios';
-
+import React from 'react';
 import Grid from '../Grid';
 
-class Layer extends Component{
-    constructor(props){
-        super(props);
-        this.state = {
-            data: props.dados
-        }
-    }
+export default function Layer(props){
+    console.log(props);
 
-    render(){
-        return(
-            <div>
-                {
-                    this.state.data.map((item) => {
-                        
-                    })
-                }
-            </div>
-        )
-    }
+    return(
+        <ul>
+            {props.data.map.length > 0 ? 
+                <li>
+                    <label>Dia: {props.data.daysForAll}</label>
+                    <br/>
+                    <Grid objeto={props.data.map} campo={props.campo}/>
+                </li>
+                :
+                undefined
+            }
+        </ul>
+    )
 }
