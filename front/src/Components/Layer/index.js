@@ -2,8 +2,6 @@ import React from 'react';
 import Grid from '../Grid';
 
 export default function Layer(props){
-    console.log(props);
-
     return(
         <ul>
             {props.data.map.length > 0 ? 

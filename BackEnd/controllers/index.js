@@ -1,6 +1,6 @@
 'use strict';
 
-var IndexModel = require('../models/index');
+let histogram = new Array();
 
 function valida_coordenada(field, x, y){
     for(let i in field){
@@ -66,28 +66,46 @@ function expancao_fumaça(field, coordenadas){
     return retorno;
 }
 
+function renderiza_console(day, map, y){
+    console.log(`DAY = ${day}`);
 
-
-module.exports = function (router) {
-
-    var model = new IndexModel();
-
-    router.get('/', function (req, res) {
-        
-        
-        res.render('index', model);
-        
-        
+    let linha = '';
+    map.map(element => {
+        if(element.y < y-1){
+            linha += element.data;
+        }
+        else{
+            linha += element.data;
+            console.log(linha);
+            linha = '';
+        }
     });
+}
 
+function renderiza_histogram(histogram, y){
+    histogram.map(element => {
+        renderiza_console(element.dia, JSON.parse(element.mapa), y);
+    })
 
-    router.post('/', async function iniciar_contagem(req, res, next){
+}
+
+module.exports = async function (router) {
+
+    router.get('/', async function iniciar_contagem(req, res, next){
+        histogram = new Array();
+
         const message = {
             status: 0,
             message: ''
         }
-        
-        const body = req.body;
+        const aux = {
+            airport: req.query.airport,
+            clounds: req.query.clounds,
+            fieldX: req.query.fieldX,
+            fieldY: req.query.fieldY
+        };
+
+        const body = aux;
 
         if(!body.airport && body.airport < 3){
             let ret = message;
@@ -117,8 +135,7 @@ module.exports = function (router) {
         }
 
         const field = new Array();
-        const histogram = new Array();
-
+        
         //Preenche o FIELD
         for(let i = 0; i < body.fieldX; i++){
             for(let j = 0; j < body.fieldY; j++){
@@ -183,15 +200,16 @@ module.exports = function (router) {
                     break;
             }
         }
+
         let days = 0,
-        daysforfirst = 0;
+        daysforfirst = 1;
         let stop_dayforfirst = false;
         
         while(true){
             if(await valida_airports(field)){
-                const data_histogram = {
+                let data_histogram = {
                     dia: days,
-                    mapa: field
+                    mapa: JSON.stringify(field)
                 }
                 histogram.push(data_histogram);
 
@@ -222,11 +240,12 @@ module.exports = function (router) {
                     daysforfirst = daysforfirst + 1;
             }
             else{
-                const datahistogram = {
+                let data_histogram = {
                     dia: days,
-                    mapa: field
+                    mapa: JSON.stringify(field)
                 }
-                histogram.push(datahistogram);
+                histogram.push(data_histogram);
+
                 break;
             }
         }

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 import Layer from '../Layer';
+import Histogram from '../Histogram';
 
 export default function Formulario(){
     const [airport, setAirport] = useState(3);
@@ -13,7 +14,8 @@ export default function Formulario(){
     const [response, setResponse] = useState({
         daysForAll: '',
         daysForFirst: '',
-        map: []
+        map: [],
+        histogram: []
     });
 
     function handleUpdateAirport(value){
@@ -46,30 +48,23 @@ export default function Formulario(){
         const dados = {
             daysForFirst: req.data.diasPrimeiroAeroporto,
             daysForAll: req.data.dias,
-            map: req.data.mapa
+            map: req.data.mapa,
+            histogram: req.data.histograma
         }
 
         setResponse(dados);
     }
 
     async function startFields(){
-        let url = 'http://localhost:3001/Iniciar';
-        let data = {
-            airport: airport,
-            clounds: clound,
-            fieldX: field.x,
-            fieldY: field.y,
-            daysforfirst: 0,
-            daysforall: 0
-        }
+        let url = `http://localhost:8000/?airport=${airport}&clounds=${clound}&fieldX=${field.x}&fieldY=${field.y}`;
 
-        const resp = await axios.post(url, data);
+        const resp = await axios.get(url);
         
         handleUpdateResponse(resp);
     }
 
     useEffect(async () => {
-        axios.defaults.baseURL = 'http://localhost:3001/';
+        axios.defaults.baseURL = 'http://localhost:8000/';
         axios.defaults.headers.post['Content-Type']='application/json;charset=utf-8';
         axios.defaults.headers.post['Access-Control-Allow-Origin'] = '*';
 
@@ -104,7 +99,11 @@ export default function Formulario(){
                 <label>Dias para cobrir todos os Aeroportos: {response.daysForAll}</label> <br/>
                 <label>Dias para cobrir o primeiro Aeroporto: {response.daysForFirst}</label>
 
-                <Layer data={response} campo={field}/>
+                <h2>Resultado Final</h2>
+                <Layer data={response} campo={field}/><br/>
+
+                <h2>Hist&oacute;rico</h2>
+                <Histogram data={response} campo={field} />
             </div>
     )
 }

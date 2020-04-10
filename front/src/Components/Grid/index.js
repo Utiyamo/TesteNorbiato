@@ -12,7 +12,6 @@ export default function Grid(props){
         mapa.map(element => {
             if(element.y < fieldy-1){
                 linha += element.data;
-                console.log(linha);
             }
             else{
                 linha += element.data;
@@ -22,8 +21,6 @@ export default function Grid(props){
                 linha = '';
             }
         })
-        console.log(JSON.stringify(array));
-
         render = array;
         
     }
